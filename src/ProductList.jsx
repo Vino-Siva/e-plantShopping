@@ -9,6 +9,9 @@ function ProductList() {
   const [showPlants, setShowPlants] = useState(false); // State to control the visibility of the About Us page
   const [addedToCart, setAddedToCart] = useState({});
 
+  const [buttonDisabled, setButtonDisabled] = useState(false);
+  const [buttonText, setButtonText] = useState("Add to Cart");
+
   const dispatch = useDispatch();
   const cart = useSelector((state) => state.cart.items);
 
@@ -291,10 +294,20 @@ function ProductList() {
 
   const handleAddToCart = (product) => {
     dispatch(addItem(product));
+
     setAddedToCart((prevState) => ({
       ...prevState,
       [product.name]: true, // Set the product name as key and value as true to indicate it's added to cart
     }));
+    // Disable the button after adding to cart
+    setButtonDisabled(true);
+    setButtonText("Added to Cart");
+
+    // enable the button after 3 seconds
+    setTimeout(() => {
+      setButtonDisabled(false);
+      setButtonText("Add to Cart");
+    }, 3000);
   };
 
   const showTotal = () =>
@@ -372,6 +385,7 @@ function ProductList() {
                     {/*Similarly like the above plant.name show other details like description and cost*/}
                     <button
                       className="product-button"
+                      disabled={buttonDisabled}
                       onClick={() => handleAddToCart(plant)}
                     >
                       Add to Cart
