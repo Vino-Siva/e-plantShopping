@@ -3,11 +3,10 @@ import { useSelector, useDispatch } from "react-redux";
 import { removeItem, updateQuantity } from "./CartSlice";
 import "./CartItem.css";
 
+// eslint-disable-next-line react/prop-types
 const CartItem = ({ onContinueShopping }) => {
   const { items } = useSelector((state) => state.cart);
   const dispatch = useDispatch();
-
-  if (!items) return null;
 
   const calculateTotalAmount = React.useMemo(
     () =>
@@ -64,6 +63,8 @@ const CartItem = ({ onContinueShopping }) => {
     []
   );
 
+  if (!items) return null;
+
   return (
     <div className="cart-container">
       <h2 style={{ color: "black" }}>
@@ -118,7 +119,15 @@ const CartItem = ({ onContinueShopping }) => {
           Continue Shopping
         </button>
         <br />
-        <button className="get-started-button1" onClick={(e) => alert('Functionality to be added for future reference')}>Checkout</button>
+        <button
+          className="get-started-button1"
+          onClick={() => {
+            // create a alert
+            alert("Checkout Successful");
+          }}
+        >
+          Checkout
+        </button>
       </div>
     </div>
   );
