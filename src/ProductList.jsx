@@ -277,6 +277,7 @@ function ProductList() {
     fontSize: "30px",
     textDecoration: "none",
   };
+
   const handleCartClick = (e) => {
     e.preventDefault();
     setShowCart(!showCart); // Set showCart to true when cart icon is clicked
@@ -384,11 +385,13 @@ function ProductList() {
                     <div className="product-title">{plant.name}</div>
                     {/*Similarly like the above plant.name show other details like description and cost*/}
                     <button
-                      className="product-button"
+                      className={`product-button ${
+                        buttonDisabled ? "added-to-cart" : ""
+                      }`}
                       disabled={buttonDisabled}
                       onClick={() => handleAddToCart(plant)}
                     >
-                      Add to Cart
+                      {buttonText}
                     </button>
                   </div>
                 ))}
