@@ -9,8 +9,8 @@ function ProductList() {
   const [showPlants, setShowPlants] = useState(false); // State to control the visibility of the About Us page
   const [addedToCart, setAddedToCart] = useState({});
 
-  const [buttonDisabled, setButtonDisabled] = useState(false);
-  const [buttonText, setButtonText] = useState("Add to Cart");
+  // const [buttonDisabled, setButtonDisabled] = useState(false);
+  // const [buttonText, setButtonText] = useState("Add to Cart");
 
   const dispatch = useDispatch();
   const cart = useSelector((state) => state.cart.items);
@@ -300,14 +300,13 @@ function ProductList() {
       ...prevState,
       [product.name]: true, // Set the product name as key and value as true to indicate it's added to cart
     }));
-    // Disable the button after adding to cart
-    setButtonDisabled(true);
-    setButtonText("Added to Cart");
 
     // enable the button after 3 seconds
     setTimeout(() => {
-      setButtonDisabled(false);
-      setButtonText("Add to Cart");
+      setAddedToCart((prevState) => ({
+        ...prevState,
+        [product.name]: false, // Set the product name as key and value as false to indicate it's not added to cart
+      }));
     }, 3000);
   };
 
@@ -386,12 +385,14 @@ function ProductList() {
                     {/*Similarly like the above plant.name show other details like description and cost*/}
                     <button
                       className={`product-button ${
-                        buttonDisabled ? "added-to-cart" : ""
+                        addedToCart[plant.name] ? "added-to-cart" : ""
                       }`}
-                      disabled={buttonDisabled}
+                      disabled={addedToCart[plant.name]}
                       onClick={() => handleAddToCart(plant)}
                     >
-                      {buttonText}
+                      {addedToCart[plant.name]
+                        ? "Added to Cart"
+                        : "Add to Cart"}
                     </button>
                   </div>
                 ))}
