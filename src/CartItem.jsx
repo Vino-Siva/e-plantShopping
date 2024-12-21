@@ -26,6 +26,10 @@ const CartItem = ({ onContinueShopping }) => {
     [onContinueShopping]
   );
 
+  const handleCheckoutShopping = (e) => {  
+	  alert('Functionality to be added for future reference');
+  };
+
   const handleIncrementClick = React.useCallback(
     (item) => {
       if (!item) return;
@@ -118,7 +122,7 @@ const CartItem = ({ onContinueShopping }) => {
           Continue Shopping
         </button>
         <br />
-        <button className="get-started-button1">Checkout</button>
+        <button className="get-started-button1" onClick={handleCheckoutShopping}>Checkout</button>
       </div>
     </div>
   );
