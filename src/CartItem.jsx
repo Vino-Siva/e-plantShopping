@@ -1,86 +1,108 @@
 import React from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { removeItem, updateQuantity } from "./CreatSlice";
+import { removeItem, updateQuantity } from "./CartSlice";
 import "./CartItem.css";
 
-const Cart = ({ onContinueShopping }) => {
-  const cart = useSelector((state) => state.cart.items);
+const CartItem = ({ onContinueShopping }) => {
+  const { items } = useSelector((state) => state.cart);
   const dispatch = useDispatch();
 
-  // Calculate total amount for all products in the cart
-  const calculateTotalAmount = () => {
-    let totalAmount = 0;
-    cart.forEach((item) => {
-      totalAmount += parseFloat(item.cost.replace("$", "")) * item.quantity;
-    });
-    return totalAmount;
-  };
+  if (!items) return null;
 
-  const handleContinueShopping = (e) => {
-    onContinueShopping();
-  };
-  const handleCheckoutShopping = (e) => {
-    alert("Functionality to be added for future reference");
-  };
+  const calculateTotalAmount = React.useMemo(
+    () =>
+      items.reduce(
+        (total, item) =>
+          total +
+          parseInt(item?.cost?.replace("$", "") || 0, 10) *
+            (item?.quantity || 0),
+        0
+      ),
+    [items]
+  );
 
-  const handleIncrement = (item) => {
-    dispatch(updateQuantity({ name: item.name, quantity: item.quantity + 1 }));
-  };
+  const handleContinueShoppingClick = React.useCallback(
+    (e) => onContinueShopping(e),
+    [onContinueShopping]
+  );
 
-  const handleDecrement = (item) => {
-    if (item.quantity > 1) {
+  const handleIncrementClick = React.useCallback(
+    (item) => {
+      if (!item) return;
       dispatch(
-        updateQuantity({ name: item.name, quantity: item.quantity - 1 })
+        updateQuantity({ ...item, quantity: (item?.quantity || 0) + 1 })
       );
-    } else {
-      dispatch(removeItem(item));
-    }
-  };
+    },
+    [dispatch]
+  );
 
-  const handleRemove = (item) => {
-    dispatch(removeItem({ name: item.name }));
-  };
+  const handleDecrementClick = React.useCallback(
+    (item) => {
+      if (!item) return;
+      dispatch(
+        updateQuantity({
+          ...item,
+          quantity: (item?.quantity || 0) - 1,
+        })
+      );
+      if ((item?.quantity || 0) === 1) dispatch(removeItem(item.name));
+    },
+    [dispatch]
+  );
 
-  // Calculate total cost based on quantity for an item
-  const calculateTotalCost = (item) => {
-    return parseFloat(item.cost.replace("$", "")) * item.quantity;
-  };
+  const handleRemoveClick = React.useCallback(
+    (item) => {
+      if (!item) return;
+      dispatch(removeItem(item.name));
+    },
+    [dispatch]
+  );
+
+  const calculateItemTotalCost = React.useCallback(
+    (item) =>
+      (item?.quantity || 0) * parseInt(item?.cost?.replace("$", "") || 0, 10),
+    []
+  );
 
   return (
     <div className="cart-container">
       <h2 style={{ color: "black" }}>
-        Total Cart Amount: ${calculateTotalAmount()}
+        Total Cart Amount: ${calculateTotalAmount}
       </h2>
       <div>
-        {cart.map((item) => (
-          <div className="cart-item" key={item.name}>
-            <img className="cart-item-image" src={item.image} alt={item.name} />
+        {items.map((item) => (
+          <div className="cart-item" key={item?.name}>
+            <img
+              className="cart-item-image"
+              src={item?.image}
+              alt={item?.name}
+            />
             <div className="cart-item-details">
-              <div className="cart-item-name">{item.name}</div>
-              <div className="cart-item-cost">{item.cost}</div>
+              <div className="cart-item-name">{item?.name}</div>
+              <div className="cart-item-cost">{item?.cost}</div>
               <div className="cart-item-quantity">
                 <button
                   className="cart-item-button cart-item-button-dec"
-                  onClick={() => handleDecrement(item)}
+                  onClick={() => handleDecrementClick(item)}
                 >
                   -
                 </button>
                 <span className="cart-item-quantity-value">
-                  {item.quantity}{" "}
+                  {item?.quantity || 0}
                 </span>
                 <button
                   className="cart-item-button cart-item-button-inc"
-                  onClick={() => handleIncrement(item)}
+                  onClick={() => handleIncrementClick(item)}
                 >
                   +
                 </button>
               </div>
               <div className="cart-item-total">
-                Total: ${calculateTotalCost(item)}
+                Total: ${calculateItemTotalCost(item)}
               </div>
               <button
                 className="cart-item-delete"
-                onClick={() => handleRemove(item)}
+                onClick={() => handleRemoveClick(item)}
               >
                 Delete
               </button>
@@ -88,24 +110,18 @@ const Cart = ({ onContinueShopping }) => {
           </div>
         ))}
       </div>
-      <div
-        style={{ marginTop: "20px", color: "black" }}
-        className="total_cart_amount"
-      ></div>
       <div className="continue_shopping_btn">
-        <button className="get-started-button" onClick={handleContinueShopping}>
+        <button
+          className="get-started-button"
+          onClick={handleContinueShoppingClick}
+        >
           Continue Shopping
         </button>
         <br />
-        <button
-          className="get-started-button1"
-          onClick={(e) => handleCheckoutShopping(e)}
-        >
-          Checkout
-        </button>
+        <button className="get-started-button1">Checkout</button>
       </div>
     </div>
   );
 };
 
-export default Cart;
+export default CartItem;
